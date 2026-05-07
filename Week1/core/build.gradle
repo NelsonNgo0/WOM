@@ -1,0 +1,23 @@
+// core/build.gradle
+// Path: core/build.gradle
+//
+// The 'core' module contains ALL your game logic (Car, GameScreen, etc.)
+// It has NO Android or desktop dependencies — pure Kotlin + LibGDX.
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+dependencies {
+    // LibGDX core (platform-independent game framework)
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "11"
+}

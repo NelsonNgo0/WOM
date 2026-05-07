@@ -1,0 +1,36 @@
+// build.gradle (root)
+// Path: build.gradle  (in your project root folder)
+
+buildscript {
+    // Versions — update these when newer stable releases come out
+    ext {
+        gdxVersion        = '1.12.1'      // LibGDX version
+        kotlinVersion     = '1.9.23'
+        agpVersion        = '8.3.2'       // Android Gradle Plugin
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:$agpVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+// Make kotlin-jvm plugin available to subprojects
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.23' apply false
+    id 'org.jetbrains.kotlin.android' version '1.9.23' apply false
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // LibGDX snapshots (only needed if you use nightly builds)
+        // maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}

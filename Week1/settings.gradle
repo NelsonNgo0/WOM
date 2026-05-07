@@ -1,0 +1,5 @@
+// settings.gradle
+// Path: settings.gradle (project root)
+
+rootProject.name = "ParkingGame"
+include ':core', ':android'

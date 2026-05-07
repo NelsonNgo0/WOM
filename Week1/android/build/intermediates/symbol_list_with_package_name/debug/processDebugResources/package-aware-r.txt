@@ -1,0 +1,2 @@
+com.parkinggame
+string app_name
