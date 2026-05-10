@@ -40,7 +40,7 @@ class TouchInputHandler : InputAdapter() {
     private val joystickCurrent = Vector2()// Where the joystick finger is now
 
     // Max drag distance (pixels) for full steer — adjust for feel
-    private val maxJoystickRadius = 80f
+    private val maxJoystickRadius = 130f
 
     // Screen half-width used to separate brake/steer zones
     private val halfScreenWidth get() = Gdx.graphics.width / 2f

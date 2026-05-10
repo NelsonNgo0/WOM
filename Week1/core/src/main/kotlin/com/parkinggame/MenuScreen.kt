@@ -26,7 +26,7 @@ class MenuScreen(
 
     private val camera = OrthographicCamera()
     private val viewport = FitViewport(LevelData.WORLD_WIDTH, LevelData.WORLD_HEIGHT, camera)
-    private val font = BitmapFont()
+    private val font = BitmapFont().also { it.data.setScale(2.8f) }
     private val layout = GlyphLayout()
 
     // Pulsing animation

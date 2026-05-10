@@ -3,186 +3,135 @@ package com.parkinggame
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Rectangle
 
-/**
- * ParkingSpot.kt
- * Path: core/src/main/kotlin/com/parkinggame/ParkingSpot.kt
- *
- * Represents the target parking space the player must drift into.
- */
-class ParkingSpot(x: Float, y: Float, width: Float = 50f, height: Float = 80f) {
+class ParkingSpot(x: Float, y: Float, width: Float = 60f, height: Float = 90f) {
     val bounds = Rectangle(x, y, width, height)
-    var isOccupied = false    // True once the player successfully parks
+    var isOccupied = false
 }
 
-/**
- * Obstacle.kt — inline in this file for brevity.
- * Represents a static collidable rectangle (wall, barrier, parked car, cone, etc.)
- */
 data class Obstacle(
     val bounds: Rectangle,
-    val color: Color = Color.DARK_GRAY
+    val color: Color = Color(0.3f, 0.3f, 0.35f, 1f)
 )
 
 /**
  * LevelData.kt
- * Path: core/src/main/kotlin/com/parkinggame/LevelData.kt
  *
- * All 5 levels defined here. Each level has:
- *  - Car start position & angle
- *  - A list of obstacles
- *  - A parking spot (goal)
+ * World is TALL — car starts at bottom, drives UP through a long road,
+ * then hits a T-intersection at the top where the parking spot waits sideways.
  *
- * World coordinates: 0,0 = bottom-left. The virtual viewport is 480 x 800.
+ * The camera scrolls with the car so the player never sees the spot until they arrive.
+ *
+ * World width: 480. Road runs up the centre (~160px wide between walls).
+ * T-intersection at Y = ~1400. Total world height = ~1800.
  */
 object LevelData {
 
-    // Virtual screen dimensions (see GameScreen for camera setup)
     const val WORLD_WIDTH = 480f
-    const val WORLD_HEIGHT = 800f
+    // Each level's world is tall enough to require scrolling
+    const val WORLD_HEIGHT = 1800f
+    const val ROAD_LEFT  = 100f     // Left kerb X
+    const val ROAD_RIGHT = 380f     // Right kerb X
+    const val ROAD_CENTRE = 240f
 
     data class Level(
         val carStartX: Float,
         val carStartY: Float,
-        val carStartAngle: Float,       // Degrees. 90 = facing up
+        val carStartAngle: Float,
         val obstacles: List<Obstacle>,
         val parkingSpot: ParkingSpot,
-        val roadColor: Color = Color(0.15f, 0.15f, 0.15f, 1f),
-        val levelName: String = ""
+        val worldHeight: Float,
+        val levelName: String
     )
 
-    fun get(levelNumber: Int): Level = when (levelNumber) {
+    fun get(n: Int): Level = when (n) {
         1 -> level1()
         2 -> level2()
-        3 -> level3()
-        4 -> level4()
-        5 -> level5()
         else -> level1()
     }
 
-    // -------------------------------------------------------------------------
-    // LEVEL 1 — Straight road, simple park at top
-    // -------------------------------------------------------------------------
-    private fun level1() = Level(
-        carStartX = WORLD_WIDTH / 2f,
-        carStartY = 80f,
-        carStartAngle = 90f,
-        levelName = "Level 1: The Warm-Up",
-        obstacles = listOf(
-            // Left wall
-            Obstacle(Rectangle(0f, 0f, 60f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            // Right wall
-            Obstacle(Rectangle(WORLD_WIDTH - 60f, 0f, 60f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            // One barrier in the middle
-            Obstacle(Rectangle(100f, 400f, 80f, 20f), Color(0.9f, 0.6f, 0.1f, 1f))
-        ),
-        parkingSpot = ParkingSpot(
-            x = WORLD_WIDTH / 2f - 25f,
-            y = WORLD_HEIGHT - 160f
+    // LEVEL 1 — Long straight road → T-intersection, park on the right
+    private fun level1(): Level {
+        val wh = 1800f
+        val tY = 1650f          // Y of the T-intersection top wall
+
+        val obstacles = mutableListOf<Obstacle>()
+        val wallColor = Color(0.28f, 0.28f, 0.32f, 1f)
+        val barrierColor = Color(0.9f, 0.6f, 0.1f, 1f)
+
+        obstacles += Obstacle(Rectangle(0f, tY + 120f, WORLD_WIDTH, 40f), wallColor)
+
+
+        // === Parking bay walls (horizontal slot to the RIGHT) ===
+        val spotX = ROAD_CENTRE -30f
+        val spotY = tY
+        val spotW = 70f
+        val spotH = 40f
+
+        // Level 1 is obstacle-free — just learn to steer, brake, and drift!
+
+        val spot = ParkingSpot(spotX, spotY, spotW, spotH)
+
+        return Level(
+            carStartX = ROAD_CENTRE,
+            carStartY = 80f,
+            carStartAngle = 90f,
+            obstacles = obstacles,
+            parkingSpot = spot,
+            worldHeight = wh,
+            levelName = "Level 1: The Drift-In"
         )
-    )
+    }
 
     // -------------------------------------------------------------------------
-    // LEVEL 2 — Slight zigzag, tighter spot
+    // LEVEL 2 — Chicane road → T-intersection, park on the LEFT
     // -------------------------------------------------------------------------
-    private fun level2() = Level(
-        carStartX = 120f,
-        carStartY = 80f,
-        carStartAngle = 90f,
-        levelName = "Level 2: The Chicane",
-        obstacles = listOf(
-            Obstacle(Rectangle(0f, 0f, 60f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            Obstacle(Rectangle(WORLD_WIDTH - 60f, 0f, 60f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            // Chicane barriers — force the player to weave
-            Obstacle(Rectangle(60f, 280f, 200f, 25f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            Obstacle(Rectangle(220f, 500f, 200f, 25f), Color(0.9f, 0.6f, 0.1f, 1f))
-        ),
-        parkingSpot = ParkingSpot(
-            x = WORLD_WIDTH - 120f,
-            y = WORLD_HEIGHT - 180f,
-            width = 45f,
-            height = 75f
-        )
-    )
+    private fun level2(): Level {
+        val wh = 2000f
+        val tY = 1600f
+        val wallColor = Color(0.28f, 0.28f, 0.32f, 1f)
+        val barrierColor = Color(0.9f, 0.6f, 0.1f, 1f)
 
-    // -------------------------------------------------------------------------
-    // LEVEL 3 — Parked cars on sides, narrow lane
-    // -------------------------------------------------------------------------
-    private fun level3() = Level(
-        carStartX = WORLD_WIDTH / 2f,
-        carStartY = 80f,
-        carStartAngle = 90f,
-        levelName = "Level 3: The Gauntlet",
-        obstacles = listOf(
-            Obstacle(Rectangle(0f, 0f, 60f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            Obstacle(Rectangle(WORLD_WIDTH - 60f, 0f, 60f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            // Parked cars on left side
-            Obstacle(Rectangle(60f, 200f, 70f, 110f), Color(0.2f, 0.5f, 0.8f, 1f)),
-            Obstacle(Rectangle(60f, 380f, 70f, 110f), Color(0.8f, 0.2f, 0.2f, 1f)),
-            Obstacle(Rectangle(60f, 560f, 70f, 110f), Color(0.2f, 0.7f, 0.3f, 1f)),
-            // Parked cars on right side
-            Obstacle(Rectangle(WORLD_WIDTH - 130f, 300f, 70f, 110f), Color(0.7f, 0.7f, 0.2f, 1f)),
-            Obstacle(Rectangle(WORLD_WIDTH - 130f, 480f, 70f, 110f), Color(0.6f, 0.2f, 0.7f, 1f))
-        ),
-        parkingSpot = ParkingSpot(
-            x = WORLD_WIDTH / 2f - 22f,
-            y = WORLD_HEIGHT - 200f,
-            width = 44f,
-            height = 72f
-        )
-    )
+        val obstacles = mutableListOf<Obstacle>()
 
-    // -------------------------------------------------------------------------
-    // LEVEL 4 — Curved road feel (offset barriers)
-    // -------------------------------------------------------------------------
-    private fun level4() = Level(
-        carStartX = 100f,
-        carStartY = 80f,
-        carStartAngle = 80f,
-        levelName = "Level 4: The Curve",
-        obstacles = listOf(
-            Obstacle(Rectangle(0f, 0f, 55f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            Obstacle(Rectangle(WORLD_WIDTH - 55f, 0f, 55f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            // Inner curve obstacles
-            Obstacle(Rectangle(200f, 150f, 180f, 25f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            Obstacle(Rectangle(60f, 350f, 160f, 25f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            Obstacle(Rectangle(240f, 550f, 140f, 25f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            // Traffic cone clusters
-            Obstacle(Rectangle(130f, 620f, 25f, 25f), Color(1f, 0.4f, 0f, 1f)),
-            Obstacle(Rectangle(160f, 640f, 25f, 25f), Color(1f, 0.4f, 0f, 1f))
-        ),
-        parkingSpot = ParkingSpot(
-            x = 300f,
-            y = WORLD_HEIGHT - 200f,
-            width = 44f,
-            height = 72f
-        )
-    )
+        // Left wall
+        obstacles += Obstacle(Rectangle(0f, 0f, ROAD_LEFT, tY + 40f), wallColor)
+        // Right wall
+        obstacles += Obstacle(Rectangle(ROAD_RIGHT, 0f, WORLD_WIDTH - ROAD_RIGHT, tY + 40f), wallColor)
 
-    // -------------------------------------------------------------------------
-    // LEVEL 5 — Tight multi-obstacle maze, small parking spot
-    // -------------------------------------------------------------------------
-    private fun level5() = Level(
-        carStartX = WORLD_WIDTH / 2f,
-        carStartY = 80f,
-        carStartAngle = 90f,
-        levelName = "Level 5: The Finale",
-        obstacles = listOf(
-            Obstacle(Rectangle(0f, 0f, 55f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            Obstacle(Rectangle(WORLD_WIDTH - 55f, 0f, 55f, WORLD_HEIGHT), Color(0.3f, 0.3f, 0.35f, 1f)),
-            // Complex barrier maze
-            Obstacle(Rectangle(55f, 200f, 130f, 22f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            Obstacle(Rectangle(295f, 280f, 130f, 22f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            Obstacle(Rectangle(55f, 400f, 160f, 22f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            Obstacle(Rectangle(265f, 480f, 160f, 22f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            Obstacle(Rectangle(55f, 580f, 120f, 22f), Color(0.9f, 0.6f, 0.1f, 1f)),
-            // Parked cars
-            Obstacle(Rectangle(310f, 560f, 65f, 100f), Color(0.2f, 0.5f, 0.8f, 1f)),
-        ),
-        parkingSpot = ParkingSpot(
-            x = 160f,
-            y = WORLD_HEIGHT - 180f,
-            width = 40f,       // Extra tight!
-            height = 68f
+        // Top walls — gap on LEFT this time
+        obstacles += Obstacle(Rectangle(0f, tY + 40f, ROAD_LEFT - 30f, wh - tY), wallColor)
+        obstacles += Obstacle(Rectangle(ROAD_RIGHT - 30f, tY + 40f, WORLD_WIDTH, wh - tY), wallColor)
+
+        // Parking bay on the LEFT
+        val spotX = 20f
+        val spotY = tY - 50f
+        val spotW = 130f
+        val spotH = 75f
+
+        obstacles += Obstacle(Rectangle(spotX, spotY + spotH, spotW, 20f), wallColor)
+        obstacles += Obstacle(Rectangle(spotX, spotY - 20f, spotW, 20f), wallColor)
+        obstacles += Obstacle(Rectangle(spotX - 20f, spotY - 20f, 20f, spotH + 40f), wallColor)
+
+        // Chicane barriers
+        obstacles += Obstacle(Rectangle(ROAD_LEFT + 10f, 350f, 100f, 22f), barrierColor)
+        obstacles += Obstacle(Rectangle(ROAD_RIGHT - 110f, 650f, 100f, 22f), barrierColor)
+        obstacles += Obstacle(Rectangle(ROAD_LEFT + 10f, 950f, 80f, 22f), barrierColor)
+        obstacles += Obstacle(Rectangle(ROAD_RIGHT - 90f, 1250f, 80f, 22f), barrierColor)
+
+        // Parked cars on sides
+        obstacles += Obstacle(Rectangle(ROAD_LEFT + 5f, 500f, 60f, 95f), Color(0.2f, 0.5f, 0.8f, 1f))
+        obstacles += Obstacle(Rectangle(ROAD_RIGHT - 65f, 800f, 60f, 95f), Color(0.8f, 0.3f, 0.2f, 1f))
+
+        val spot = ParkingSpot(spotX + 5f, spotY, spotW - 15f, spotH)
+
+        return Level(
+            carStartX = ROAD_CENTRE,
+            carStartY = 80f,
+            carStartAngle = 90f,
+            obstacles = obstacles,
+            parkingSpot = spot,
+            worldHeight = wh,
+            levelName = "Level 2: The Chicane"
         )
-    )
+    }
 }
