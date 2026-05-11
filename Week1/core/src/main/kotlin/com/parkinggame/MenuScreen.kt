@@ -1,43 +1,51 @@
 package com.parkinggame
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.viewport.FitViewport
 
-/**
- * MenuScreen.kt
- * Path: core/src/main/kotlin/com/parkinggame/MenuScreen.kt
- *
- * Simple main menu with:
- * - Title
- * - "Tap to Play" prompt
- * - Win message if showWin = true
- */
 class MenuScreen(
     private val game: ParkingGame,
-    private val showWin: Boolean = false
+    val showWin: Boolean = false
 ) : Screen {
 
-    private val camera = OrthographicCamera()
-    private val viewport = FitViewport(LevelData.WORLD_WIDTH, LevelData.WORLD_HEIGHT, camera)
-    private val font = BitmapFont().also { it.data.setScale(2.8f) }
-    private val layout = GlyphLayout()
+    private val W = LevelData.WORLD_WIDTH
+    private val H = 800f
+    private val camera   = OrthographicCamera()
+    private val viewport = FitViewport(W, H, camera)
+    private val font      = BitmapFont().also { it.data.setScale(3f) }
+    private val smallFont = BitmapFont().also { it.data.setScale(2f) }
 
-    // Pulsing animation
     private var time = 0f
+    private var showSettings = false
+
+    private var btnStart         = Rectangle()
+    private var btnSettings      = Rectangle()
+    private var btnSoundToggle   = Rectangle()
+    private var btnMusicToggle   = Rectangle()
+    private var btnCloseSettings = Rectangle()
 
     override fun show() {
-        // Use a simple input adapter that starts the game on any touch
-        Gdx.input.inputProcessor = object : com.badlogic.gdx.InputAdapter() {
+        Gdx.input.inputProcessor = object : InputAdapter() {
             override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-                game.setScreen(GameScreen(game, 1))
-                dispose()
+                val sh = Gdx.graphics.height.toFloat()
+                val fx = screenX.toFloat(); val fy = screenY.toFloat()
+
+                if (showSettings) {
+                    if (UIHelper.hits(btnSoundToggle,   fx, fy, sh)) GameSettings.soundEnabled = !GameSettings.soundEnabled
+                    if (UIHelper.hits(btnMusicToggle,   fx, fy, sh)) GameSettings.musicEnabled = !GameSettings.musicEnabled
+                    if (UIHelper.hits(btnCloseSettings, fx, fy, sh)) showSettings = false
+                    return true
+                }
+                if (UIHelper.hits(btnStart,    fx, fy, sh)) { game.setScreen(GameScreen(game, 1)); dispose() }
+                if (UIHelper.hits(btnSettings, fx, fy, sh)) { showSettings = true }
                 return true
             }
         }
@@ -45,56 +53,96 @@ class MenuScreen(
 
     override fun render(delta: Float) {
         time += delta
-
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.12f, 1f)
+        Gdx.gl.glClearColor(UITheme.BG_DARK.r, UITheme.BG_DARK.g, UITheme.BG_DARK.b, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         camera.update()
         val sr = game.shapeRenderer
-        val ww = LevelData.WORLD_WIDTH
-        val wh = LevelData.WORLD_HEIGHT
+        sr.projectionMatrix  = camera.combined
+        game.batch.projectionMatrix = camera.combined
 
-        sr.projectionMatrix = camera.combined
+        drawBackground(sr)
+        drawTitle()
+        drawButtons(sr)
+        if (showSettings) drawSettingsPanel(sr)
+    }
 
-        // Draw a stylised car silhouette in the background
+    private fun drawBackground(sr: ShapeRenderer) {
         sr.begin(ShapeRenderer.ShapeType.Filled)
-        sr.color = Color(0.85f, 0.2f, 0.2f, 0.3f)
-        sr.rect(ww / 2f - 40f, wh / 2f - 100f, 80f, 130f)
+        sr.color = Color(0.15f, 0.15f, 0.17f, 1f)
+        sr.rect(W / 2f - 80f, 0f, 160f, H)
         sr.end()
 
-        // Title
-        game.batch.projectionMatrix = camera.combined
+        sr.begin(ShapeRenderer.ShapeType.Filled)
+        val offset = (time * 200f) % 100f
+        sr.color = Color(0.28f, 0.28f, 0.30f, 1f)
+        var y = -offset
+        while (y < H) { sr.rect(W / 2f - 4f, y, 8f, 50f); y += 100f }
+        sr.end()
+
+        sr.begin(ShapeRenderer.ShapeType.Filled)
+        sr.color = Color(UITheme.ACCENT_RED.r, UITheme.ACCENT_RED.g, UITheme.ACCENT_RED.b, 0.18f)
+        sr.rect(W / 2f - 22f, H * 0.30f, 44f, 80f)
+        sr.end()
+    }
+
+    private fun drawTitle() {
         game.batch.begin()
-
-        // Title text
-        font.color = Color.WHITE
-        val title = if (showWin) "YOU PARKED THEM ALL!" else "DRIFT PARK"
-        layout.setText(font, title)
-        font.draw(game.batch, title, (ww - layout.width) / 2f, wh * 0.72f)
-
-        // Subtitle
-        font.color = Color(0.7f, 0.7f, 0.7f, 1f)
-        val sub = "5 Levels • Arcade Drifting"
-        layout.setText(font, sub)
-        font.draw(game.batch, sub, (ww - layout.width) / 2f, wh * 0.65f)
-
-        // Pulsing tap prompt
-        val pulse = 0.6f + 0.4f * Math.sin(time * 3.0).toFloat()
-        font.color = Color(1f, 0.9f, 0.3f, pulse)
-        val tap = if (showWin) "Tap to Play Again" else "Tap to Play"
-        layout.setText(font, tap)
-        font.draw(game.batch, tap, (ww - layout.width) / 2f, wh * 0.4f)
-
-        // Controls hint
-        font.color = Color(0.5f, 0.5f, 0.5f, 1f)
-        font.draw(game.batch, "LEFT = BRAKE    RIGHT = STEER", 40f, wh * 0.2f)
-
+        if (showWin) {
+            UIHelper.drawCentredText(game.batch, font, "ALL LEVELS", W / 2f, H * 0.82f, UITheme.ACCENT_GREEN)
+            UIHelper.drawCentredText(game.batch, font, "COMPLETE!",  W / 2f, H * 0.75f, UITheme.ACCENT)
+        } else {
+            UIHelper.drawCentredText(game.batch, font, "DRIFT", W / 2f, H * 0.82f, UITheme.ACCENT)
+            UIHelper.drawCentredText(game.batch, font, "PARK",  W / 2f, H * 0.74f, UITheme.TEXT_WHITE)
+        }
+        val pulse = 0.5f + 0.5f * Math.sin(time * 2.5).toFloat()
+        UIHelper.drawCentredText(game.batch, smallFont, "Tap to Start",
+            W / 2f, H * 0.22f, Color(UITheme.TEXT_DIM.r, UITheme.TEXT_DIM.g, UITheme.TEXT_DIM.b, pulse))
         game.batch.end()
     }
 
+    private fun drawButtons(sr: ShapeRenderer) {
+        val bw = 260f; val bh = 70f; val bx = W / 2f - bw / 2f
+        btnStart = UIHelper.drawButton(sr, game.batch, smallFont,
+            if (showWin) "PLAY AGAIN" else "START GAME",
+            bx, H * 0.42f, bw, bh, UITheme.BTN_PRIMARY, UITheme.BG_DARK)
+        btnSettings = UIHelper.drawButton(sr, game.batch, smallFont,
+            "SETTINGS", bx, H * 0.42f - bh - 20f, bw, bh, UITheme.BTN_SECONDARY, UITheme.TEXT_WHITE)
+    }
+
+    private fun drawSettingsPanel(sr: ShapeRenderer) {
+        sr.begin(ShapeRenderer.ShapeType.Filled)
+        sr.color = UITheme.OVERLAY
+        sr.rect(0f, 0f, W, H)
+        sr.end()
+
+        val pw = 340f; val ph = 380f
+        val px = W / 2f - pw / 2f; val py = H / 2f - ph / 2f
+        UIHelper.drawPanel(sr, px, py, pw, ph, UITheme.BG_PANEL)
+
+        game.batch.begin()
+        UIHelper.drawCentredText(game.batch, font, "SETTINGS", W / 2f, py + ph - 30f, UITheme.ACCENT)
+        game.batch.end()
+
+        val bw = 260f; val bh = 65f; val bx = W / 2f - bw / 2f
+
+        val soundLabel = if (GameSettings.soundEnabled) "SOUND: ON" else "SOUND: OFF"
+        val soundCol   = if (GameSettings.soundEnabled) UITheme.ACCENT_GREEN else UITheme.ACCENT_RED
+        btnSoundToggle = UIHelper.drawButton(sr, game.batch, smallFont,
+            soundLabel, bx, py + ph - 140f, bw, bh, soundCol, UITheme.BG_DARK)
+
+        val musicLabel = if (GameSettings.musicEnabled) "MUSIC: ON" else "MUSIC: OFF"
+        val musicCol   = if (GameSettings.musicEnabled) UITheme.ACCENT_GREEN else UITheme.ACCENT_RED
+        btnMusicToggle = UIHelper.drawButton(sr, game.batch, smallFont,
+            musicLabel, bx, py + ph - 230f, bw, bh, musicCol, UITheme.BG_DARK)
+
+        btnCloseSettings = UIHelper.drawButton(sr, game.batch, smallFont,
+            "CLOSE", bx, py + 30f, bw, bh, UITheme.BTN_SECONDARY, UITheme.TEXT_WHITE)
+    }
+
     override fun resize(width: Int, height: Int) { viewport.update(width, height, true) }
-    override fun hide() {}
-    override fun pause() {}
-    override fun resume() {}
-    override fun dispose() { font.dispose() }
+    override fun hide()    {}
+    override fun pause()   {}
+    override fun resume()  {}
+    override fun dispose() { font.dispose(); smallFont.dispose() }
 }

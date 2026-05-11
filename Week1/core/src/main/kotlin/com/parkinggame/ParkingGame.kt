@@ -27,7 +27,7 @@ class ParkingGame : Game() {
 
         // Start on the main menu screen
         // Change to GameScreen(this, 1) to jump straight into level 1
-        setScreen(MenuScreen(this))
+        setScreen(SplashScreen(this))
     }
 
     override fun dispose() {

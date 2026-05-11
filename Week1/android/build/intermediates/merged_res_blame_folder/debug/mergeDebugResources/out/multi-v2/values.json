@@ -4,7 +4,7 @@
             "outputFile": "com.parkinggame.android-mergeDebugResources-2:/values/values.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Nelson\\Documents\\v02\\WOM\\Week1\\android\\src\\main\\res\\values\\strings.xml",
+                    "source": "C:\\Users\\PTC - 265\\Desktop\\WOM\\Week1\\android\\src\\main\\res\\values\\strings.xml",
                     "from": {
                         "startLines": "1",
                         "startColumns": "4",

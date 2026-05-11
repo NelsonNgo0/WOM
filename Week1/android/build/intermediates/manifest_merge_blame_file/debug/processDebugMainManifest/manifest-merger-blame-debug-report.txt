@@ -16,52 +16,52 @@
 16
 17    <!-- Keep CPU running while game is active (needed for wakelock) -->
 18    <uses-permission android:name="android.permission.WAKE_LOCK" />
-18-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:11:5-67
-18-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:11:22-65
+18-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:11:5-67
+18-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:11:22-65
 19
 20    <uses-feature
-20-->[com.badlogicgames.gdx:gdx-backend-android:1.12.1] C:\Users\Nelson\.gradle\caches\9.0.0\transforms\140e3044a429a0d853590afb3ddc23a0\transformed\gdx-backend-android-1.12.1\AndroidManifest.xml:9:5-11:35
+20-->[com.badlogicgames.gdx:gdx-backend-android:1.12.1] C:\Users\PTC - 265\.gradle\caches\9.0.0\transforms\140e3044a429a0d853590afb3ddc23a0\transformed\gdx-backend-android-1.12.1\AndroidManifest.xml:9:5-11:35
 21        android:glEsVersion="0x00020000"
-21-->[com.badlogicgames.gdx:gdx-backend-android:1.12.1] C:\Users\Nelson\.gradle\caches\9.0.0\transforms\140e3044a429a0d853590afb3ddc23a0\transformed\gdx-backend-android-1.12.1\AndroidManifest.xml:10:9-41
+21-->[com.badlogicgames.gdx:gdx-backend-android:1.12.1] C:\Users\PTC - 265\.gradle\caches\9.0.0\transforms\140e3044a429a0d853590afb3ddc23a0\transformed\gdx-backend-android-1.12.1\AndroidManifest.xml:10:9-41
 22        android:required="true" />
-22-->[com.badlogicgames.gdx:gdx-backend-android:1.12.1] C:\Users\Nelson\.gradle\caches\9.0.0\transforms\140e3044a429a0d853590afb3ddc23a0\transformed\gdx-backend-android-1.12.1\AndroidManifest.xml:11:9-32
+22-->[com.badlogicgames.gdx:gdx-backend-android:1.12.1] C:\Users\PTC - 265\.gradle\caches\9.0.0\transforms\140e3044a429a0d853590afb3ddc23a0\transformed\gdx-backend-android-1.12.1\AndroidManifest.xml:11:9-32
 23
 24    <application
-24-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:13:5-33:19
+24-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:13:5-33:19
 25        android:allowBackup="false"
-25-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:14:9-36
+25-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:14:9-36
 26        android:debuggable="true"
 27        android:extractNativeLibs="false"
 28        android:icon="@android:drawable/sym_def_app_icon"
-28-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:16:9-58
+28-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:16:9-58
 29        android:label="@string/app_name"
-29-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:17:9-41
+29-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:17:9-41
 30        android:testOnly="true"
 31        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-31-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:18:9-67
+31-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:18:9-67
 32        <activity
-32-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:20:9-32:20
+32-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:20:9-32:20
 33            android:name="com.parkinggame.android.AndroidLauncher"
-33-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:21:13-52
+33-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:21:13-52
 34            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize"
-34-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:24:13-126
+34-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:24:13-126
 35            android:exported="true"
-35-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:25:13-36
+35-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:25:13-36
 36            android:label="@string/app_name"
-36-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:22:13-45
+36-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:22:13-45
 37            android:screenOrientation="portrait" >
-37-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:23:13-49
+37-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:23:13-49
 38
 39            <!-- Makes this the launcher activity (home screen icon) -->
 40            <intent-filter>
-40-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:28:13-31:29
+40-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:28:13-31:29
 41                <action android:name="android.intent.action.MAIN" />
-41-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:29:17-68
-41-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:29:25-66
+41-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:29:17-68
+41-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:29:25-66
 42
 43                <category android:name="android.intent.category.LAUNCHER" />
-43-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:30:17-76
-43-->C:\Users\Nelson\Documents\v02\WOM\Week1\android\src\main\AndroidManifest.xml:30:27-74
+43-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:30:17-76
+43-->C:\Users\PTC - 265\Desktop\WOM\Week1\android\src\main\AndroidManifest.xml:30:27-74
 44            </intent-filter>
 45        </activity>
 46    </application>
